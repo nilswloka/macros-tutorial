@@ -1,4 +1,4 @@
-xoh1. An Introduction to Lisp Macros using Clojure and Enlive
+h1. An Introduction to Lisp Macros using Clojure and Enlive
 
 I had originally included a section on macros in my introductory Enlive tutorial and in the end thought better of it. My Enlive tutorial turned out to be far more popular than I had imagined it would be. I think the idea of keeping your HTML and your code separate really struck a nerve with the working web developer. Now that the dust has settled I realized there is no better introduction to Lisp macros then the topic of HTML templating and I’m writing this more advanced tutorial to explain Lisp macros to the uninitiated as well as use the features of Enlive to build higher level HTML templating abstractions.
 
