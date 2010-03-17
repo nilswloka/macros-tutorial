@@ -10,6 +10,8 @@ Writing web pages is largely about taking one textual representation and transfo
 
 Enlive gives you the full power of Clojure to generate your HTML. Clojure itself give you the full power of Clojure to generate your code! If you understand HTML templating you can understand Lisp macros.
 
+As has been famously said, in Lisp, Code is Data and Data is Code.
+
 h2. An Example
 
 Imagine that you’re working with Enlive and you find yourself writing the following snippet:
@@ -206,11 +208,14 @@ tutorial.syntax=> (macroexpand '(int-add 1 2))
 
 Again this <code>int-add</code> example is a trivial, unrealistic, and fairly pointless example only for the purposes of illustration. Now let's solve some real world problems.
 
+TODO: defmacro a function to show issues around symbols
+TODO: show gensym
+
 h2. Getting Serious
 
-No I won't lie, as simple as the previous parts were the following is going to be pretty rough. I hope you stick with it. There's not that much code involved to accomplish this fairly complicated transformation, but there's a lot going on.
+Now I won't lie, as simple as the previous parts were the following is going to be pretty rough going but I hope you stick with it. There is not much code involved in this transformation, but what's there packs a punch.
 
-First let's see that this actually works. I've create a macro called <code>quick-snippet</code> which loads a widget and analyzes it produce the right code. Instead writing out the whole template you can write the following:
+First let's see how this actually works. We've created a macro called <code>quick-snippet</code> which loads a analyzes a widget so it can produce the right code. With <code>quick-snippet</code> instead of writing out the whole template you can write the following:
 
 <pre>
 (m/quick-snippet book "resources/widgets.html" [:.book]))
@@ -241,7 +246,7 @@ tutorial.books=> (pprint (macroexpand '(m/quick-snippet book "resources/widgets.
 nil
 </pre>
 
-Wow. Without changing a line of Enlive, I've built a whole new level of functionality <i>on top of</i> Enlive.
+Wow. Without changing a line of Enlive, here's a whole new level of functionality <i>on top of</i> Enlive.
 
 Lets dive into the code. Open the file *macroology.clj*. It's a tiny file. This is all the code that it takes to augment Enlive.
 
@@ -301,7 +306,7 @@ The next function is not so simple:
 
 The first thing we do is use eval. This is generally not necessary for macros and in fact is discouraged. However for what we mean to accomplish there is no other way that doesn't generate more code than we'd like. We need information about the HTML file.
 
-When a macro is executed you are not handed "values" you're simply handle whatever symbols or expressions are present in the code. This is a common error to think you are being handed values. You are always transforming code not the values present in your program.
+When a macro is executed you are not handed "values" you're simply handle whatever symbols or expressions are present in the code. This is a common error to think you are being handed values. You are always transforming code not the values present in your program. But there are ways to get at those values if you really need them, eval is one way to get at them.
 
 So we evaluate <code>rsrc</code> so that we can load an HTML resource. We then also need to evaluate the <code>selector</code> so that we can match only a specific part of the document. Finally we select only the child nodes of that part of the document that actually have CSS classes.
 
