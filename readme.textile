@@ -39,11 +39,16 @@ Now if your favorite language is not a competent Lisp there’s not much you can
 
 “Christophe Grand could you pretty please make it so that I quickly generate a template from the CSS classes that are already in markup?”
 
-Now Christophe Grand being a nice guy and talented Lisp hacker might oblige you. But imagine taking this kind of request to the Django templating library maintainers, they would probably laugh at you. And rightly so.
+Now Christophe Grand being a nice guy and talented Lisp hacker might oblige you. But imagine taking this kind of request to the Django templating library maintainers, they probably wouldn't take you too seriously and honestly, rightly so.
 
-This is because you are requesting a level not a higher of functionality, you are requesting a higher level of expression. Most languages are set in stone and library maintainers can rarely provide a higher level of expression without a <i>considerable</i> amount of work. The library maintainer will probably ask you to submit a patch and they'll consider it.
+This is because you are requesting a level not a higher of functionality, you are requesting a higher level of expression. Most languages are set in stone and library maintainers can rarely provide a higher level of expression without a <i>considerable</i> amount of work. This is because:
 
-The beauty of Lisp is that when we are confronted with the wrong level of expression we can just write a macro and we don't need to wait around for the library maintainers to get their act together.
+# They need to change their implementation.
+# You need to understand their implementation well enough to submit a patch.
+
+The beauty of Lisp is that when we are confronted with the wrong level of expression we can just write a macro and we don't need to wait around for the library maintainers to get their act together. And the best part is that you don't need to understand their implementation to write a macro. You can just program to the agreed upon interface.
+
+This is powerful stuff.
 
 h2. Sneak Peak
 

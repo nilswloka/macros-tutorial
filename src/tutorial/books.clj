@@ -3,7 +3,8 @@
         [clojure.contrib.duck-streams :only [pwd]]
         [tutorial.utils :only [render render-snippet]])
   (:require [net.cgrand.enlive-html :as html]
-            [tutorial.macroology :as m]))
+            [tutorial.macroology :as m])
+  (:import [org.apache.commons.lang StringEscapeUtils]))
 
 (def *resources* (str (pwd) "/src/resources/"))
 
@@ -15,12 +16,12 @@
                :ISBN "?"}
               {:title "Life A User's Manual"
                :author "Georges Perec"
-               :publisher "Hachette Littératures"
+               :publisher (StringEscapeUtils/escapeHtml "Hachette Littératures")
                :date "1978"
                :edition "1st"
                :ISBN "?"}
               {:title "2666"
-               :author "Roberto Bolaño"
+               :author (StringEscapeUtils/escapeHtml "Roberto Bolaño")
                :publisher "Editorial Anagrama"
                :date "2004"
                :edition "1st"
