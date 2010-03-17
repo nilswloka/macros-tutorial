@@ -45,6 +45,31 @@ This is because you are requesting a level not a higher of functionality, you ar
 
 The beauty of Lisp is that when we are confronted with the wrong level of expression we can just write a macro and we don't need to wait around for the library maintainers to get their act together.
 
+h2. Sneak Peak
+
+Before we get into macros let's run the code. Start up a REPL with "lein repl" in the repository.
+
+<pre class="console">
+user=> (load "tutorial/books")
+nil
+user=> (in-ns 'tutorial.books)
+nil
+tutorial.books=> (start-app)
+... output ...
+</pre>
+
+Point your favorite browser at *http://localhost:8080/*. You should see a list books. If you remember the previous tutorial the following should shock you. This is how much templating code we have:
+
+<pre>
+(m/quick-snippet book "resources/widgets.html" [:.book])
+
+(html/deftemplate index "resources/index.html"
+  [ctxt]
+  [:.books] (html/content (map book (:books ctxt))))
+</pre>
+
+Intrigued yet? :)
+
 h2. Macro Syntax
 
 Let’s start up the Clojure REPL in the usual way:
@@ -178,5 +203,10 @@ Again this <code>int-add</code> example is a trivial, unrealistic, and fairly po
 
 h2. Getting Serious
 
+No I won't lie, as simple as the previous parts were the following is going to be pretty rough. I hope you stick with it. There's not that much code involved to accomplish this fairly complicated transformation, but there's a lot going on.
 
+First let's see that this actually works. Try the following at your REPL:
 
+<pre>
+
+</pre>
