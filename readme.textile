@@ -79,7 +79,7 @@ h2. Macro Syntax
 
 Let’s start up the Clojure REPL in the usual way:
 
-<pre class=“console”>
+<pre class="console">
 user=> (load “tutorial/syntax”)
 nil
 user=> (in-ns ’tutorial.syntax)
@@ -88,14 +88,14 @@ nil
 
 The first we need to understand is that when we template code, we are working with lists.
 
-<pre>
+<pre class="console">
 tutorial/syntax=> ()
 ()
 </pre>
 
 This is a list. But it’s also useful to think of it as being something very similar to, say, a DOM node ;)
 
-<pre>
+<pre class="console">
 tutorial/syntax=> (a b)
 ()
 (a b)
@@ -104,7 +104,7 @@ java.lang.Exception: Unable to resolve symbol: a in this context ...
 
 We’ve tried to evaluate a list which includes two symbols which have never been defined. Thus the error.
 
-<pre>
+<pre class="console">
 tutorial/syntax=> ‘(a b)
 '(a b)
 (a b)
@@ -113,7 +113,7 @@ tutorial/syntax=> ‘(a b)
 
 Interesting eh? No error. This is a quoted list. A quoted listed will not attempt to evaluate it’s contents. The following looks remarkably similar.
 
-<pre>
+<pre class="console">
 tutorial/syntax=> `(a b)
 ‘(a b)
 (tutorial.syntax/a tutorial.syntax/b)
@@ -121,7 +121,7 @@ tutorial/syntax=> `(a b)
 
 Interesting. ` is the syntax quote. But what is this good for?
 
-<pre>
+<pre class="console">
 tutorial/syntax=> (let [a 1 b 2] `(~a ~b))
 (let [a 1 b 2] `(~a ~b))
 (1 2)
@@ -131,7 +131,7 @@ Say hello to your first Lisp template. Syntax quote allows us to splice in value
 
 But this is not a macro. We’re just creating lists here. What we want is a way to transform a piece of code and replace it with the transformation. This is the whole point of defmacro. We’ll get to this in a moment. Let’s show another useful feature before we move on.
 
-<pre>
+<pre class="console">
 tutorial.syntax=> (let [f + v [1 2 3]] `(~f ~@v))
 (let [f + v [1 2 3]] `(~f ~@v))
 (#<core$_PLUS ...> 1 2 3)
@@ -143,7 +143,7 @@ h2. defmacro
 
 Okay it’s time to talk about defmacro. Be warned the following is completely contrived, it’s only for the purposes of demonstration. We’ll get to the real world macro soon. Before we look at the code let’s run the following:
 
-<pre>
+<pre class="console">
 tutorial.syntax=> (slow-add 1 2)
 (slow-add 1 2)
 "Elapsed time: 93.175 msecs"
@@ -156,7 +156,7 @@ nil
 
 Then run the following:
 
-<pre>
+<pre class="console">
 tutorial.syntax=> (fast-add 1 2)
 (fast-add 1 2)
 "Elapsed time: 51.211 msecs"
@@ -196,7 +196,7 @@ So that Clojure calls the correct implementation of <code>+</code> and avoids re
 
 Type the following into the REPL:
 
-<pre>
+<pre class="console">
 tutorial.syntax=> (macroexpand '(int-add 1 2))
 (macroexpand-1 '(int-add 1 2))
 (clojure.core/+ (clojure.core/int 1) (clojure.core/int 2))
@@ -218,7 +218,7 @@ First let's see that this actually works. I've create a macro called <code>quick
 
 It's important to be able to expand macros in order to debug them. Try the following at your REPL:
 
-<pre>
+<pre class="console">
 tutorial.books=> (pprint (macroexpand '(m/quick-snippet book "resources/widgets.html" [:.book])))
 (def
  book
