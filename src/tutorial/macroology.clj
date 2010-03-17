@@ -5,7 +5,7 @@
 
 (def *child-nodes-with-class* (html/selector [html/root [:* (html/attr? :class)]]))
  
-(defn- selector-for-node [{tag :tag, attrs :attrs}]
+(defn selector-for-node [{tag :tag, attrs :attrs}]
   (let [css-class (s/trim (first (s/split (:class attrs) #" ")))]
     `([~(keyword (str (name tag) "." css-class))] (html/content (~(keyword css-class) ~'ctxt)))))
  

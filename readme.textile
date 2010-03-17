@@ -17,12 +17,12 @@ Imagine that you’re working with Enlive and you find yourself writing the foll
 <pre>
 (defsnippet book-widget “resources/widgets.html” [:.book]
   [{:keys [title author publisher date edition ISBN] :as ctxt}]
-  [:.title] (content title)
-  [:.author] (content author)
+  [:.title]     (content title)
+  [:.author]    (content author)
   [:.publisher] (content publisher)
-  [:.date] (content date)
-  [:.edition] (content edition)
-  [:.ISBN] (content ISBN))
+  [:.date]      (content date)
+  [:.edition]   (content edition)
+  [:.ISBN]      (content ISBN))
 </pre>
 
 In my experience most programmers consider this standard fare, a unavoidable bit of tediousness. However a Lisp programmer looks at this and think “I know I’m going to be writing stuff like this all the time, I want this to be generated automatically for me.” I am going to show you how to do this.
@@ -210,8 +210,103 @@ h2. Getting Serious
 
 No I won't lie, as simple as the previous parts were the following is going to be pretty rough. I hope you stick with it. There's not that much code involved to accomplish this fairly complicated transformation, but there's a lot going on.
 
-First let's see that this actually works. Try the following at your REPL:
+First let's see that this actually works. I've create a macro called <code>quick-snippet</code> which loads a widget and analyzes it produce the right code. Instead writing out the whole template you can write the following:
 
 <pre>
-
+(m/quick-snippet book "resources/widgets.html" [:.book]))
 </pre>
+
+It's important to be able to expand macros in order to debug them. Try the following at your REPL:
+
+<pre>
+tutorial.books=> (pprint (macroexpand '(m/quick-snippet book "resources/widgets.html" [:.book])))
+(def
+ book
+ (net.cgrand.enlive-html/snippet
+  "resources/widgets.html"
+  [:.book]
+  [ctxt]
+  [:span.title]
+  (net.cgrand.enlive-html/content (:title ctxt))
+  [:span.author]
+  (net.cgrand.enlive-html/content (:author ctxt))
+  [:span.publisher]
+  (net.cgrand.enlive-html/content (:publisher ctxt))
+  [:span.date]
+  (net.cgrand.enlive-html/content (:date ctxt))
+  [:span.edition]
+  (net.cgrand.enlive-html/content (:edition ctxt))
+  [:span.ISBN]
+  (net.cgrand.enlive-html/content (:ISBN ctxt))))
+nil
+</pre>
+
+Wow. Without changing a line of Enlive, I've built a whole new level of functionality <i>on top of</i> Enlive.
+
+Lets dive into the code. Open the file *macroology.clj*. It's a tiny file. This is all the code that it takes to augment Enlive.
+
+<pre>
+(ns tutorial.macroology
+  (:use [tutorial.utils :only [render]])
+  (:require [net.cgrand.enlive-html :as html]
+            [clojure.contrib.str-utils2 :as s]))
+
+(def *child-nodes-with-class* (html/selector [html/root [:* (html/attr? :class)]]))
+ 
+(defn- selector-for-node [{tag :tag, attrs :attrs}]
+  (let [css-class (s/trim (first (s/split (:class attrs) #" ")))]
+    `([~(keyword (str (name tag) "." css-class))] (html/content (~(keyword css-class) ~'ctxt)))))
+ 
+(defmacro quick-snippet [name rsrc selector]
+  (let [nodes (-> (html/html-resource (eval rsrc))
+                  (html/select (eval `(html/selector ~selector)))
+                  (html/select *child-nodes-with-class*))]
+    `(html/defsnippet ~name ~rsrc ~selector
+       [~'ctxt]
+       ~@(reduce concat (map selector-for-node nodes)))))
+</pre>
+
+Let's break it down. First:
+
+<pre>
+(defn- selector-for-node [{tag :tag, attrs :attrs}]
+  (let [css-class (s/trim (first (s/split (:class attrs) #" ")))]
+    `([~(keyword (str (name tag) "." css-class))] (html/content (~(keyword css-class) ~'ctxt)))))
+</pre>
+
+This function takes a node and automatically generates the selector/function pair that Enlive templates and snippets use to transform HTML. The first big simply extracts the first CSS class. So this hints there will be a one to one correspondence between the keys in the map passed into the final snippet and first CSS class name of a node.
+
+You should be familiar with syntax quote now. Note that we can run regular code before splice in the final value.
+
+To get a better sense of what's going on lets give this function content at the REPL:
+
+<pre class="console">
+tutorial.books=> (m/selector-for-node {:tag :div :attrs {:class "foo bar"}})
+([:div.foo] (net.cgrand.enlive-html/content (:foo ctxt)))
+</pre>
+
+It should be quite clear what this function does now. Given an HTML node it creates the matching selector/function pair based on the CSS class.
+
+The next function is not so simple:
+
+<pre>
+(defmacro quick-snippet [name rsrc selector]
+  (let [nodes (-> (html/html-resource (eval rsrc))
+                  (html/select (eval `(html/selector ~selector)))
+                  (html/select *child-nodes-with-class*))]
+    `(html/defsnippet ~name ~rsrc ~selector
+       [~'ctxt]
+       ~@(reduce concat (map selector-for-node nodes)))))
+</pre>
+
+The first thing we do is use eval. This is generally not necessary for macros and in fact is discouraged. However for what we mean to accomplish there is no other way that doesn't generate more code than we'd like. We need information about the HTML file.
+
+When a macro is executed you are not handed "values" you're simply handle whatever symbols or expressions are present in the code. This is a common error to think you are being handed values. You are always transforming code not the values present in your program.
+
+So we evaluate <code>rsrc</code> so that we can load an HTML resource. We then also need to evaluate the <code>selector</code> so that we can match only a specific part of the document. Finally we select only the child nodes of that part of the document that actually have CSS classes.
+
+We then emit the defsnippet splicing in the <code>name</code>, <code>rsrc</code>, and <code>selector</code> unchanged. <code>~'ctxt</code> is there so that the macro doesn't tryto resolve this symbol, it's jut a local var. Finally we take all the matching nodes, map over them with <code>selector-for-node</code> and splice in the selector/fn pairs.
+
+This is definitely a doozy. And programming macros is not a simple task by any means.
+
+But clearly the dividends are huge in this case. We now have a general way to automatically generate templates for many, many kinds of widgets with one line of code.

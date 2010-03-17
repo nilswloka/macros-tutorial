@@ -1,7 +1,8 @@
 (ns tutorial.books
   (:use compojure
         [clojure.contrib.duck-streams :only [pwd]]
-        [tutorial.utils :only [render render-snippet]])
+        [tutorial.utils :only [render render-snippet]]
+        [clojure.contrib.pprint])
   (:require [net.cgrand.enlive-html :as html]
             [tutorial.macroology :as m])
   (:import [org.apache.commons.lang StringEscapeUtils]))
