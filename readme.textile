@@ -1,6 +1,6 @@
-h1. An Introduction to Lisp Macros using Clojure and Enlive
+xoh1. An Introduction to Lisp Macros using Clojure and Enlive
 
-I had originally included a section on macros in my introductory Enlive tutorial and in the end thought better of it. My Enlive tutorial turned out to be far more popular than I had imagined it would be. I think the idea of keeping your HTML and your code separate really struck a nerve with the working web developer. Now that the dust has settled I realized there is no better introduction to Lisp macros then the topic of HTML templating and I’m writing this more advanced tutorial to explain Lisp macros to the uninitiated.
+I had originally included a section on macros in my introductory Enlive tutorial and in the end thought better of it. My Enlive tutorial turned out to be far more popular than I had imagined it would be. I think the idea of keeping your HTML and your code separate really struck a nerve with the working web developer. Now that the dust has settled I realized there is no better introduction to Lisp macros then the topic of HTML templating and I’m writing this more advanced tutorial to explain Lisp macros to the uninitiated as well as use the features of Enlive to build higher level HTML templating abstractions.
 
 I highly, highly that you go through the first six tutorials if you aren’t already familiar with Clojure. If are familiar with Clojure you skim this one as well and get to the meat of how Enlive can be the building blocks of a powerful templating solution.
 
@@ -27,13 +27,23 @@ Imagine that you’re working with Enlive and you find yourself writing the foll
 
 In my experience most programmers consider this standard fare, a unavoidable bit of tediousness. However a Lisp programmer looks at this and think “I know I’m going to be writing stuff like this all the time, I want this to be generated automatically for me.” I am going to show you how to do this.
 
-Now if your favorite language is not a competent Lisp there’s not much you can do accept approach the templating library author and ask them to make an enhancement. But what would the requested enhancement be?
+By the end of this tutorial you will be able to write the following:
 
-“Christophe Grand could you please make it so that I quickly generate a template from the CSS classes that are already in markup?”
+<pre>
+(quick-template book-widget "resources/widgets.html" [:.book])
+</pre>
 
-This is the kind of request that if you asked the Django templating library maintainers, they would probably laugh at you. And rightly so.
+And it will automatically generate the code above.
 
-This is because you are requesting a level not a higher of functionality, you are requesting a higher level of expression. Most languages are set in stone and library maintainers can rarely provide a higher level of expression with a considerable amount of work. The beauty of Lisp is that when we are confronted with the wrong level of expression we can write a macro.
+Now if your favorite language is not a competent Lisp there’s not much you can do except approach the templating library author and ask them to make an enhancement. What would the requested enhancement be?
+
+“Christophe Grand could you pretty please make it so that I quickly generate a template from the CSS classes that are already in markup?”
+
+Now Christophe Grand being a nice guy and talented Lisp hacker might oblige you. But imagine taking this kind of request to the Django templating library maintainers, they would probably laugh at you. And rightly so.
+
+This is because you are requesting a level not a higher of functionality, you are requesting a higher level of expression. Most languages are set in stone and library maintainers can rarely provide a higher level of expression without a <i>considerable</i> amount of work. The library maintainer will probably ask you to submit a patch and they'll consider it.
+
+The beauty of Lisp is that when we are confronted with the wrong level of expression we can just write a macro and we don't need to wait around for the library maintainers to get their act together.
 
 h2. Macro Syntax
 
@@ -85,7 +95,6 @@ Interesting. ` is the syntax quote. But what is this good for?
 tutorial/syntax=> (let [a 1 b 2] `(~a ~b))
 (let [a 1 b 2] `(~a ~b))
 (1 2)
-
 </pre>
 
 Say hello to your first Lisp template. Syntax quote allows us to splice in values with ~. Again if you’ve done some HTML templating this should not be so alien to you.
@@ -105,5 +114,69 @@ h2. defmacro
 Okay it’s time to talk about defmacro. Be warned the following is completely contrived, it’s only for the purposes of demonstration. We’ll get to the real world macro soon. Before we look at the code let’s run the following:
 
 <pre>
-
+tutorial.syntax=> (slow-add 1 2)
+(slow-add 1 2)
+"Elapsed time: 93.175 msecs"
+"Elapsed time: 87.948 msecs"
+"Elapsed time: 82.617 msecs"
+"Elapsed time: 95.717 msecs"
+"Elapsed time: 81.954 msecs"
+nil
 </pre>
+
+Then run the following:
+
+<pre>
+tutorial.syntax=> (fast-add 1 2)
+(fast-add 1 2)
+"Elapsed time: 51.211 msecs"
+"Elapsed time: 35.186 msecs"
+"Elapsed time: 32.346 msecs"
+"Elapsed time: 29.503 msecs"
+"Elapsed time: 38.929 msecs"
+nil
+</pre>
+
+What's the difference here? If we look at the code we see teh following:
+
+<pre>
+(defmacro int-add [a b]
+  `(+ (int ~a) (int ~b)))
+
+(defn slow-add [a b]
+  (dotimes [_ 5]
+    (time
+     (dotimes [_ 5000000]
+       (+ a b)))))
+
+(defn fast-add [a b]
+  (dotimes [_ 5]
+    (time
+     (dotimes [_ 5000000]
+       (int-add a b)))))
+</pre>
+
+In order to get the best arithmetic performance out of the JVM, Clojure can provide type-hints to the compiler. You have to write something like the following:
+
+<pre>
+(+ (int 4) (int 5))
+</pre>
+
+So that Clojure calls the correct implementation of <code>+</code> and avoids reflection. Again this is not something you should concern yourself with, and the number above show that operations on boxed numbers is passable.
+
+Type the following into the REPL:
+
+<pre>
+tutorial.syntax=> (macroexpand '(int-add 1 2))
+(macroexpand-1 '(int-add 1 2))
+(clojure.core/+ (clojure.core/int 1) (clojure.core/int 2))
+</pre> 
+
+<code>macroexpand</code> is convenience that shows what quote list will expand to. This code will <i>replace</i> every occurence of <i>int-add</i>. If you're familiar with C/C++ preprocessing you should be used to this idea. But if you conclude from this that Lisp macros really don't add much beyond that you would be very wrong. Macro's have full access the programming language. In the following section we will load the markup, analyze it with Enlive and use that information to generate an Enlive template.
+
+Again this <code>int-add</code> example is a trivial, unrealistic, and fairly pointless example only for the purposes of illustration. Now let's solve some real world problems.
+
+h2. Getting Serious
+
+
+
