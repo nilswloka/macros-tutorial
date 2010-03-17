@@ -11,8 +11,10 @@
   (let [css-class (:class attrs)]
     `([~(keyword (str (name tag) "." css-class))] (html/content (~(keyword css-class) ~'ctxt)))))
  
-(defmacro quick-template [name rsrc]
-  (let [nodes (html/select (html/html-resource (eval rsrc)) *nodes-with-id*)]
-    `(html/deftemplate ~name ~rsrc
+(defmacro quick-snippet [name rsrc selector]
+  (let [nodes (-> (html/html-resource (eval rsrc))
+                  (html/select (html/selector (eval selector)))
+                  (html/select *nodes-with-class*))]
+    `(html/defsnippet ~name ~rsrc ~selector
        [~'ctxt]
        ~@(reduce concat (map selector-for-node nodes)))))

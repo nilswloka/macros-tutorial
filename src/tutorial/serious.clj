@@ -1,8 +1,16 @@
 (ns tutorial.serious
   (:use compojure
-        [tutorial.utils :only [render]])
+        [tutorial.utils :only [render render-snippet]])
   (:require [net.cgrand.enlive-html :as html]
-            [tutorials.macroology :as m]))
+            [tutorial.macroology :as m]))
 
-(m/quick-template book "resources/book.html" [:.book])
- 
+(def *data* {:title "Gravity's Rainbow"
+             :author "Thomas Pynchon"
+             :publisher "Penguin"
+             :date "1974"
+             :edition "1st"
+             :ISBN "foo"})
+
+(m/quick-snippet book "resources/widgets.html" [:.book])
+
+(println (render-snippet (book *data*)))
