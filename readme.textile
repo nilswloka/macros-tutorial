@@ -1,0 +1,109 @@
+h2. Introduction
+
+I had originally included a section on macros in my introductory Enlive tutorial and in the end thought better of it. My Enlive tutorial turned out to be far more popular than I had imagined it would be. I think the idea of keeping your HTML and your code separate really struck a nerve with the working web developer. Now that the dust has settled I realized there is no better introduction to Lisp macros then the topic of HTML templating and I’m writing this more advanced tutorial to explain Lisp macros to the uninitiated.
+
+I highly, highly that you go through the first six tutorials if you aren’t already familiar with Clojure. If are familiar with Clojure you skim this one as well and get to the meat of how Enlive can be the building blocks of a powerful templating solution.
+
+h2. Templating and Macros
+
+Writing web pages is largely about taking one textual representation and transforming it into another. Every web developer knows this. Well it turns out that Lisp lets you do the very same thing.
+
+Enlive gives you the full power of Clojure to generate your HTML. Clojure itself give you the full power of Clojure to generate your code! If you understand HTML templating you can understand Lisp macros.
+
+h2. An Example
+
+Imagine that you’re working with Enlive and you find yourself writing the following snippet:
+
+<pre>
+(defsnippet book-widget “resources/widgets.html” [:.book]
+  [{:keys [title author publisher date edition ISBN] :as ctxt}]
+  [:.title] (content title)
+  [:.author] (content author)
+  [:.publisher] (content publisher)
+  [:.date] (content date)
+  [:.edition] (content edition)
+  [:.ISBN] (content ISBN))
+</pre>
+
+In my experience most programmers consider this standard fare, a unavoidable bit of tediousness. However a Lisp programmer looks at this and think “I know I’m going to be writing stuff like this all the time, I want this to be generated automatically for me.” I am going to show you how to do this.
+
+Now if your favorite language is not a competent Lisp there’s not much you can do accept approach the templating library author and ask them to make an enhancement. But what would the requested enhancement be?
+
+“Christophe Grand could you please make it so that I quickly generate a template from the CSS classes that are already in markup?”
+
+This is the kind of request that if you asked the Django templating library maintainers, they would probably laugh at you. And rightly so.
+
+This is because you are requesting a level not a higher of functionality, you are requesting a higher level of expression. Most languages are set in stone and library maintainers can rarely provide a higher level of expression with a considerable amount of work. The beauty of Lisp is that when we are confronted with the wrong level of expression we can write a macro.
+
+h2. Macro Syntax
+
+Let’s start up the Clojure REPL in the usual way:
+
+<pre class=“console”>
+user=> (load “tutorial/syntax”)
+nil
+user=> (in-ns ’tutorial.syntax)
+nil
+</pre>
+
+The first we need to understand is that when we template code, we are working with lists.
+
+<pre>
+tutorial/syntax=> ()
+()
+</pre>
+
+This is a list. But it’s also useful to think of it as being something very similar to, say, a DOM node ;)
+
+<pre>
+tutorial/syntax=> (a b)
+()
+(a b)
+java.lang.Exception: Unable to resolve symbol: a in this context ...
+</pre>
+
+We’ve tried to evaluate a list which includes two symbols which have never been defined. Thus the error.
+
+<pre>
+tutorial/syntax=> ‘(a b)
+'(a b)
+(a b)
+
+</pre>
+
+Interesting eh? No error. This is a quoted list. A quoted listed will not attempt to evaluate it’s contents. The following looks remarkably similar.
+
+<pre>
+tutorial/syntax=> `(a b)
+‘(a b)
+(tutorial.syntax/a tutorial.syntax/b)
+</pre>
+
+Interesting. ` is the syntax quote. But what is this good for?
+
+<pre>
+tutorial/syntax=> (let [a 1 b 2] `(~a ~b))
+(let [a 1 b 2] `(~a ~b))
+(1 2)
+
+</pre>
+
+Say hello to your first Lisp template. Syntax quote allows us to splice in values with ~. Again if you’ve done some HTML templating this should not be so alien to you.
+
+But this is not a macro. We’re just creating lists here. What we want is a way to transform a piece of code and replace it with the transformation. This is the whole point of defmacro. We’ll get to this in a moment. Let’s show another useful feature before we move on.
+
+<pre>
+tutorial.syntax=> (let [f + v [1 2 3]] `(~f ~@v))
+(let [f + v [1 2 3]] `(~f ~@v))
+(#<core$_PLUS ...> 1 2 3)
+</pre>
+
+Wow. ~@ lets us splice in the values of vector! When transform code this is a particularly useful operation (keep thinking about how this relates to HTML templating).
+
+h2. defmacro
+
+Okay it’s time to talk about defmacro. Be warned the following is completely contrived, it’s only for the purposes of demonstration. We’ll get to the real world macro soon. Before we look at the code let’s run the following:
+
+<pre>
+
+</pre>
