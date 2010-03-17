@@ -1,0 +1,19 @@
+.book
+{
+   width: 300px;
+   border: solid 2px #ccc;
+   -moz-border-radius: 4px;
+   -webkit-border-radius: 4px;
+   padding: 4px;
+   margin-bottom: 4px;
+}
+
+.book label
+{
+   font-weight: bold;
+}
+
+.book span
+{
+   width: 100%
+}
