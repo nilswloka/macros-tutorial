@@ -8,7 +8,7 @@ h2. Templating and Macros
 
 Coding web pages is largely about taking one textual representation and transforming it into another based on some data you are given. Every web developer knows this. Well, it turns out that many Lisps, including Clojure, allow you to do the very same thing with Lisp code itself.
 
-So while Enlive gives you the full power of Clojure to generate your HTML, Clojure gives you the full power of Clojure to generate your code! It's one of those features of Lisp that is often talked about but rarely well described. This why I think HTML templating is a great introduction into Lisp macros, if you're a web developer, HTML templating is an activity where the concept of transforming structures is already internalized. If you understand HTML templating you can understand Lisp macros.
+So while Enlive gives you the full power of Clojure to generate your HTML, Clojure gives you the full power of Clojure to generate your code! It's one of those features of Lisp that is often talked about but rarely well described. This why I think HTML templating is a great introduction to Lisp macros, if you're a web developer, HTML templating is an activity where the concept of transforming structures is already internalized. If you understand HTML templating you can understand Lisp macros.
 
 
 h2. An Example
@@ -26,7 +26,7 @@ Imagine that you’re working with Enlive and you find yourself writing the foll
   [:.ISBN]      (content ISBN))
 </pre>
 
-In my experience most programmers consider this standard fare- an unavoidable bit of tediousness. However a Lisp programmer looks at this and thinks "I know I'm going to be writing stuff like this all the time, I want this to be generated automatically for me." 
+In my experience most programmers consider this standard fare- an unavoidable bit of tediousness. However a Lisp programmer looks at this and thinks <i>"I know I'm going to be writing stuff like this all the time, I want this to be generated automatically for me."</i> 
 
 What is the pattern here that can be abstracted away? We have a HTML file of widgets handed to us by the designer. The first CSS class name of all the elements in that file can be used for templating in values. If there's a lot of widgets in that file you're going to have a lot of widgets in your code that look exactly the same as the above. There's no reason to type this over and over again. We have a real pattern that can be abstracted away. I am going to show you how to do this.
 
@@ -42,12 +42,7 @@ Now if your favorite programming language is not a competent Lisp there's not mu
 
 "Could you pretty please make it so that I can quickly generate a template from the CSS classes that are already in markup?”
 
-Imagine taking this kind of request to the Django templating library maintainers, they probably wouldn't take you too seriously and honestly, rightly so. This is because you are requesting a level not a higher of functionality, you are requesting a higher level of expression. Most languages are syntatically set in stone and library maintainers can rarely provide a higher level of expression without a <i>considerable</i> amount of work. This is because:
-
-# They need to change their implementation.
-# You need to understand their implementation well enough to submit a patch.
-
-As the library maintainer you have to the foresight to make your library extensible. Django's templating library allows this via it's tags concept. Lisp macros take it another level further, Lisp macros make the entire language extensible.
+Imagine taking this kind of request to the Django templating library maintainers, they probably wouldn't take you too seriously and honestly, rightly so. In languages which don't support macros often the approach is to design a Domain Specific Langauge to tackle the problem at hand. The problem with DSLs is that they are generally are even more restrictive they the language they were written in. In Lisp writing a DSL is just writing some macros. The beauty of macros is that you can write macros that use those macros. At no point is there is a decrease in the amount of expressive power even as your syntax becomes simpler and more domain specific.
 
 The beauty of Lisp is that when we are confronted with the wrong level of expression we can just write a macro and we don't need to wait around for the library maintainers. And the best part is that you don't need to understand their implementation to write a macro. You can just program to the agreed upon interface.
 
