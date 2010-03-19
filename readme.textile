@@ -42,9 +42,9 @@ Now if your favorite programming language is not a competent Lisp there's not mu
 
 "Could you pretty please make it so that I can quickly generate a template from the CSS classes that are already in markup?”
 
-Imagine taking this kind of request to the Django templating library maintainers, they probably wouldn't take you too seriously and honestly, rightly so. In languages which don't support macros often the approach is to design a Domain Specific Langauge to tackle the problem at hand. The problem with DSLs is that they are generally are even more restrictive they the language they were written in. In Lisp writing a DSL is just writing some macros. The beauty of macros is that you can write macros that use those macros. At no point is there is a decrease in the amount of expressive power even as your syntax becomes simpler and more domain specific.
+Imagine taking this kind of request to the Django templating library maintainers, they probably wouldn't take you too seriously and honestly, rightly so. In languages which don't support macros often the approach is to design a Domain Specific Langauge to tackle the problem at hand. The problem with DSLs is that they are generally are even more restrictive then the language they were written in. In Lisp writing a DSL is just writing some macros. The beauty of macros is that you can write macros that use other macros; at no point is there is a decrease in the amount of expressive power available to you even as your syntax becomes simpler and more domain specific.
 
-The beauty of Lisp is that when we are confronted with the wrong level of expression we can just write a macro and we don't need to wait around for the library maintainers. And the best part is that you don't need to understand their implementation to write a macro. You can just program to the agreed upon interface.
+The beauty of Lisp is that when we are confronted with what we believe to be the wrong level of expression we can just write a macro and we don't need to wait around for the library maintainers.
 
 This is powerful stuff.
 
@@ -61,7 +61,7 @@ tutorial.books=> (start-app)
 ... output ...
 </pre>
 
-Point your favorite browser at *http://localhost:8080/*. You should see a list books. If you remember the previous tutorial the following should shock you. This is how much templating code we have:
+Point your favorite browser at *http://localhost:8080/*. You should see a list of books. If you remember the previous tutorial the following should shock you. This is how much templating code we have:
 
 <pre>
 (m/quick-snippet book "resources/widgets.html" [:.book])
@@ -78,13 +78,13 @@ h2. Macro Syntax
 Let’s start up the Clojure REPL in the usual way:
 
 <pre class="console">
-user=> (load “tutorial/syntax”)
+user=> (load "tutorial/syntax")
 nil
-user=> (in-ns ’tutorial.syntax)
+user=> (in-ns 'tutorial.syntax)
 nil
 </pre>
 
-The first we need to understand is that when we template code, we are working with lists.
+The first thing you need to understand is that when you template code, you are working with lists.
 
 <pre class="console">
 tutorial/syntax=> ()
@@ -95,7 +95,6 @@ This is a list. But it’s also useful to think of it as being something very si
 
 <pre class="console">
 tutorial/syntax=> (a b)
-()
 (a b)
 java.lang.Exception: Unable to resolve symbol: a in this context ...
 </pre>
@@ -103,39 +102,34 @@ java.lang.Exception: Unable to resolve symbol: a in this context ...
 We’ve tried to evaluate a list which includes two symbols which have never been defined. Thus the error.
 
 <pre class="console">
-tutorial/syntax=> ‘(a b)
-'(a b)
+tutorial/syntax=> '(a b)
 (a b)
-
 </pre>
 
-Interesting eh? No error. This is a quoted list. A quoted listed will not attempt to evaluate it’s contents. The following looks remarkably similar.
+Interesting eh? No error. This is a quoted list. A quoted listed will not attempt to resolve it’s contents. The following looks remarkably similar.
 
 <pre class="console">
 tutorial/syntax=> `(a b)
-‘(a b)
 (tutorial.syntax/a tutorial.syntax/b)
 </pre>
 
-Interesting. ` is the syntax quote. But what is this good for?
+Interesting. ` is the syntax-quote. But what is this good for?
 
 <pre class="console">
 tutorial/syntax=> (let [a 1 b 2] `(~a ~b))
-(let [a 1 b 2] `(~a ~b))
 (1 2)
 </pre>
 
-Say hello to your first Lisp template. Syntax quote allows us to splice in values with ~. Again if you’ve done some HTML templating this should not be so alien to you.
+Say hello to your first Lisp template. syntax-quote allows us to template in values with ~ (called "unquote"). Again if you have done some HTML templating this should not be so alien to you.
 
-But this is not a macro. We’re just creating lists here. What we want is a way to transform a piece of code and replace it with the transformation. This is the whole point of defmacro. We’ll get to this in a moment. Let’s show another useful feature before we move on.
+But this is not a macro. We're just creating lists here. What we want is a way to transform a piece of code and replace it with the transformation. This is the whole point of <code>defmacro</code>. We'll get to this in a moment. Let's show another useful feature before we move on.
 
 <pre class="console">
 tutorial.syntax=> (let [f + v [1 2 3]] `(~f ~@v))
-(let [f + v [1 2 3]] `(~f ~@v))
 (#<core$_PLUS ...> 1 2 3)
 </pre>
 
-Wow. ~@ lets us splice in the values of vector! When transform code this is a particularly useful operation (keep thinking about how this relates to HTML templating).
+Wow. ~@ lets us splice in a sequence of values! ~@ is called splicing unquote. When transform code this is a particularly useful operation.
 
 h2. defmacro
 
@@ -208,6 +202,16 @@ Again this <code>int-add</code> example is a trivial, unrealistic, and fairly po
 
 TODO: defmacro a function to show issues around symbols
 TODO: show gensym
+
+h2. Symbol conflicts
+
+One thing you have to watch for when writing macros is symbol conflicts. Imagine that you're writing a macro that generates a function, the function argugment list defines some parameters. You have to be very careful that symbols names in your macroexpansion don't conflict with symbols names outside your maxroexpansion.
+
+h3. An Example
+
+h3. gensym
+
+h3. I know what I'm doing
 
 h2. Diving In
 
