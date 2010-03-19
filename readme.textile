@@ -257,7 +257,7 @@ tutorial.books=> (pprint (macroexpand '(m/quick-snippet book "resources/widgets.
 nil
 </pre>
 
-Wow. Without changing a line of Enlive, here's a whole new level of functionality <i>on top of</i> Enlive. <code>pprint</code> is just a part of *clojure-contrib* and let's us print formatted Clojure code.
+Wow. Without changing a line of Enlive, here's a whole new level of functionality <i>on top of</i> Enlive. <code>pprint</code> is just a part of *clojure-contrib* and lets us print formatted Clojure code.
 
 Let's dive into the code. Open the file *macroology.clj*. It's a tiny file. This is all the code that it takes to augment Enlive.
 
@@ -317,7 +317,7 @@ The next function is not so simple:
 
 The first thing we do is use eval. This is generally not necessary for macros and in fact is discouraged. However for what we mean to accomplish there is no other way that doesn't generate more code than we'd like. We need information from the HTML file in order to generate our code.
 
-IMPORTANT: When a macro is executed you are not handed "values" you're simply handled whatever symbols or expressions are present in the code. This is a common error to think you are being handed values. <i>Macros manipulate code as data</i>, there no values yet. But there are ways to get at those values if you really need them, eval is one way to get at them.
+IMPORTANT: When a macro is executed you are not handed "values" you're simply handled whatever symbols or expressions are present in the code. This is a common error to think you are being handed values. <i>Macros manipulate code as data</i>, there are no values yet. But there are ways to get at those values if you really need them, eval is one way to get at them.
 
 So we evaluate <code>rsrc</code> so that we can load an HTML resource. We then also need to evaluate the <code>selector</code> so that we can match only a specific part of the document. Finally we select only the child nodes of that part of the document that actually have CSS classes.
 
@@ -325,7 +325,7 @@ We then emit the <code>defsnippet</code> inserting <code>name</code>, <code>rsrc
 
 This is definitely a doozy. And programming macros is not a simple task by any means. But clearly the dividends are huge in this case. We now have a way to automatically generate templates for many, many kinds of widgets in one line of code.
 
-h2. What next?
+h2. What's next?
 
 I've glossed over few things for the sake of simplicity. Once you start writing macros you'll have to make sure you don't accidentally capture variables. Clojure has a very simple gensym syntax to avoid this. I'm not going to illustrate them here, but Clojure macros are very, very similar to Common Lisp macros, so I whole-heartedly recommend looking at Paul Graham's On Lisp which is available for free online for a more in-depth treatment.
 
