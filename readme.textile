@@ -321,7 +321,7 @@ IMPORTANT: When a macro is executed you are not handed "values" you're simply ha
 
 So we evaluate <code>rsrc</code> so that we can load an HTML resource. We then also need to evaluate the <code>selector</code> so that we can match only a specific part of the document. Finally we select only the child nodes of that part of the document that actually have CSS classes.
 
-We then emit the defsnippet splicing in the <code>name</code>, <code>rsrc</code>, and <code>selector</code> unchanged. <code>~'ctxt</code> is there so that the macro doesn't try to resolve this symbol, it's the argument to our macro defined Enlive template. Finally we take all the matching nodes, map over them with <code>selector-for-node</code> and splice in the result in the selector/fn pairs.
+We then emit the <code>defsnippet</code> inserting <code>name</code>, <code>rsrc</code>, and <code>selector</code> unchanged. <code>~'ctxt</code> is there so that the macro doesn't try to resolve this symbol, it's the argument to our macro-defined Enlive template. Finally we take all the matching nodes, map over them with <code>selector-for-node</code> and splice in the result in the selector/fn pairs.
 
 This is definitely a doozy. And programming macros is not a simple task by any means. But clearly the dividends are huge in this case. We now have a general way to automatically generate templates for many, many kinds of widgets with one line of code.
 
