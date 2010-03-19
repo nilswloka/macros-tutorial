@@ -40,7 +40,7 @@ And it will automatically generate the verbose code above.
 
 Now if your favorite programming language is not a competent Lisp there's not much you can do except approach the templating library authors and ask them to make an enhancement. What would the requested enhancement be?
 
-"Could you pretty please make it so that I can quickly generate a template from the CSS classes that are already in markup?”
+"Could you pretty please make it so that I can quickly generate a template from the CSS classes that are already in the markup?”
 
 Imagine taking this kind of request to, say, the Django templating library maintainers, they probably wouldn't take you too seriously and honestly, rightly so. In languages which don't support macros often the approach is to design a Domain Specific Langauge (DSL) to tackle the problem. The problem with DSLs is that they are generally even more restrictive then the language they are written in. In Lisp writing a DSL is often just writing some macros. The beauty of macros is that you can write macros that use other macros; at no point is there is a decrease in the amount of expressive power available to you even as your syntax becomes simpler and more domain specific.
 
@@ -71,7 +71,7 @@ tutorial.books=> (start-app)
 ... output ...
 </pre>
 
-Point your favorite browser at *http://localhost:8080/*. You should see a list of books. If you remember the previous tutorial the following should shock you. This is how much templating code we have:
+Point your favorite browser at *http://localhost:8080/*. You should see a list of books. If you remember the previous tutorials the following should shock you. This is how much templating code we have:
 
 <pre>
 (m/quick-snippet book "resources/widgets.html" [:.book])
@@ -205,9 +205,9 @@ tutorial.syntax=> (macroexpand '(int-add 1 2))
 
 <code>macroexpand</code> is a convenience that outputs what the code would expand to. Oftentime people complain that macros would somehow decrease the maintainability of a codebase. This is classic Fear, Uncertainity, Doubt (FUD). It's critical to be able to debug and inspect macros and the tools for doing so are a part of the language.
 
-Note that here we quote the code so that the symbols in the expression don't get resolved. We've converted code into data. You've probably heard the expression that in Lisp "code is data". With a simple quote we've convert code into data that we can operate on. <code>defmacro</code> is how we convert transformed data back into working code.
+Note that here we quote the code so that the symbols in the expression don't get resolved. We've converted code into data. You've probably heard the expression that in Lisp "code is data". With a simple quote we've converted code into data that we can operate on. <code>defmacro</code> is how we convert transformed data back into working code.
 
-Before your code gets compiled the reader will <i>replace</i> every occurence of <i>int-add</i> with it's macroexpansion. If you're familiar with C/C++ preprocessing you should be used to this idea. But if you conclude from this example that Lisp macros really don't add much beyond that you would be very wrong. Macros have full access to the programming language. In the following section we will load markup from an HTML file, analyze it with Enlive and use that information to generate our code.
+Before your code gets compiled the reader will <i>replace</i> every occurence of <i>int-add</i> with it's macroexpansion. If you're familiar with C/C++ preprocessing you should be used to this idea. But if you conclude from this example that Lisp macros really don't add much beyond that you would be very, very wrong. Macros have full access to the programming language. In the following section we will load markup from an HTML file, analyze it with Enlive and use that information to generate our code.
 
 Just to drive the point home, this <code>int-add</code> example is a trivial, unrealistic, and fairly pointless exercise only for the purposes of illustration. Now let's solve some real world problems.
 
@@ -269,7 +269,7 @@ Let's dive into the code. Open the file *macroology.clj*. It's a tiny file. This
 
 (def *child-nodes-with-class* (html/selector [html/root [:* (html/attr? :class)]]))
  
-(defn- selector-for-node [{tag :tag, attrs :attrs}]
+(defn selector-for-node [{tag :tag, attrs :attrs}]
   (let [css-class (s/trim (first (s/split (:class attrs) #" ")))]
     `([~(keyword (str (name tag) "." css-class))] (html/content (~(keyword css-class) ~'ctxt)))))
  
@@ -285,7 +285,7 @@ Let's dive into the code. Open the file *macroology.clj*. It's a tiny file. This
 Let's break it down. First:
 
 <pre>
-(defn- selector-for-node [{tag :tag, attrs :attrs}]
+(defn selector-for-node [{tag :tag, attrs :attrs}]
   (let [css-class (s/trim (first (s/split (:class attrs) #" ")))]
     `([~(keyword (str (name tag) "." css-class))] (html/content (~(keyword css-class) ~'ctxt)))))
 </pre>
@@ -321,9 +321,9 @@ IMPORTANT: When a macro is executed you are not handed "values" you're simply ha
 
 So we evaluate <code>rsrc</code> so that we can load an HTML resource. We then also need to evaluate the <code>selector</code> so that we can match only a specific part of the document. Finally we select only the child nodes of that part of the document that actually have CSS classes.
 
-We then emit the <code>defsnippet</code> inserting <code>name</code>, <code>rsrc</code>, and <code>selector</code> unchanged. <code>~'ctxt</code> is there so that the macro doesn't try to resolve this symbol, it's the argument to our macro-defined Enlive template. Finally we take all the matching nodes, map over them with <code>selector-for-node</code> and splice in the result in the selector/fn pairs.
+We then emit the <code>defsnippet</code> inserting <code>name</code>, <code>rsrc</code>, and <code>selector</code> unchanged. <code>~'ctxt</code> is there so that the macro doesn't try to resolve this symbol, it's the argument to our macro-defined Enlive template. Finally we take all the matching nodes, map over them with <code>selector-for-node</code> and splice in the selector/fn pairs.
 
-This is definitely a doozy. And programming macros is not a simple task by any means. But clearly the dividends are huge in this case. We now have a general way to automatically generate templates for many, many kinds of widgets with one line of code.
+This is definitely a doozy. And programming macros is not a simple task by any means. But clearly the dividends are huge in this case. We now have a way to automatically generate templates for many, many kinds of widgets in one line of code.
 
 h2. What next?
 
@@ -332,7 +332,7 @@ I've glossed over few things for the sake of simplicity. Once you start writing 
 On a final note, as fantastic as Lisp macros are they aren't the answer to everything. For example they are not functions and cannot be used where functions are very useful. The following would not work at all:
 
 <pre>
-(map int-add vector-ints-1 vector-of-ints-2)
+(map int-add vector-of-ints-1 vector-of-ints-2)
 </pre>
 
 Still in real world Lisp applications they allow you to avoid boilerplate in way that few other languages can, at least not without an undue amount of work on your part.
