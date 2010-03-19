@@ -215,15 +215,7 @@ h2. Diving In
 
 Now I won't lie, as simple as the previous parts were the following is going to be pretty rough going but I hope you stick with it. There is not much code involved in this transformation, but what's there packs a punch.
 
-First let's see how this actually works. We've created a macro called <code>quick-snippet</code> which loads and analyzes a widget so it can produce the right code. With <code>quick-snippet</code> instead of writing out the whole template you can write the following:
-
-<pre>
-(m/quick-snippet book "resources/widgets.html" [:.book]))
-</pre>
-
-(In case you've forgotten, we often want to include the functionality from a different library. In this case we're loading the library *macroology* and aliasing to *m*. Thus <code>m/quick-snippet</code>.)
-
-It's important to be able to expand macros in order to debug them. Start your REPL if it's not already up and running:
+Start your REPL if it's not already up and running and enter the following:
 
 <pre class="console">
 user=> (load "tutorial/books")
@@ -232,7 +224,15 @@ user=> (in-ns 'tutorial.books)
 nil
 </pre>
 
-Now try the following at your REPL:
+We've created a macro called <code>quick-snippet</code> which loads and analyzes a widget so it can produce the right code. With <code>quick-snippet</code> instead of writing out the whole template you can write the following:
+
+<pre>
+(m/quick-snippet book "resources/widgets.html" [:.book]))
+</pre>
+
+(In case you've forgotten, we often want to include the functionality from a different library. In this case we're loading the library *macroology* and aliasing to *m*. Thus <code>m/quick-snippet</code>).
+
+It's important to be able to expand macros in order to debug them. Try the following at your REPL:
 
 <pre class="console">
 tutorial.books=> (pprint (macroexpand '(m/quick-snippet book "resources/widgets.html" [:.book])))
@@ -327,4 +327,12 @@ This is definitely a doozy. And programming macros is not a simple task by any m
 
 h2. What next?
 
-Clojure macros are very, very similar to Common Lisp macros. I whole heartedly recommend looking at Paul Graham's On Lisp for a more in-depth treatment.
+I've glossed over few things for the sake of simplicity. Once you start writing macros you'll have to make sure you don't accidentally capture variables. Clojure has a very simple gensym syntax to avoid this. I'm not going to illustrate them here, but Clojure macros are very, very similar to Common Lisp macros, so I whole-heartedly recommend looking at Paul Graham's On Lisp which is available for free online for a more in-depth treatment.
+
+On a final note, as fantastic as Lisp macros are they aren't the answer to everything. For example they are not functions and cannot be used where functions are very useful. The following would not work at all:
+
+<pre>
+(map int-add vector-ints-1 vector-of-ints-2)
+</pre>
+
+Still in real world Lisp applications they allow you to avoid boilerplate in way that few other languages can, at least not without an undue amount of work on your part.
