@@ -48,6 +48,16 @@ The power of Lisp is that when we are confronted with what we believe to be an i
 
 This is powerful stuff.
 
+h2. Getting Started
+
+I assume that you have already installed Leiningen. You clone this repo in the usual way. Once you have it checked out you should run the following from your clone at the command line.
+
+<pre class="console">
+lein deps
+</pre>
+
+This will grab all of the dependencies required to go through this tutorial.
+
 h2. Sneak Peak
 
 Before we get into macros let's run the following code. Start up a REPL with "lein repl" in the repository:
@@ -159,7 +169,7 @@ tutorial.syntax=> (fast-add 1 2)
 nil
 </pre>
 
-What's the difference here? If we look at the code we see the following:
+What's the difference here? If we look at the code in *syntax.clj* we see the following:
 
 <pre>
 (defmacro int-add [a b]
@@ -213,7 +223,16 @@ First let's see how this actually works. We've created a macro called <code>quic
 
 (In case you've forgotten, we often want to include the functionality from a different library. In this case we're loading the library *macroology* and aliasing to *m*. Thus <code>m/quick-snippet</code>.)
 
-It's important to be able to expand macros in order to debug them. Try the following at your REPL:
+It's important to be able to expand macros in order to debug them. Start your REPL if it's not already up and running:
+
+<pre class="console">
+user=> (load "tutorial/books")
+nil
+user=> (in-ns 'tutorial.books)
+nil
+</pre>
+
+Now try the following at your REPL:
 
 <pre class="console">
 tutorial.books=> (pprint (macroexpand '(m/quick-snippet book "resources/widgets.html" [:.book])))
@@ -238,9 +257,9 @@ tutorial.books=> (pprint (macroexpand '(m/quick-snippet book "resources/widgets.
 nil
 </pre>
 
-Wow. Without changing a line of Enlive, here's a whole new level of functionality <i>on top of</i> Enlive.
+Wow. Without changing a line of Enlive, here's a whole new level of functionality <i>on top of</i> Enlive. <code>pprint</code> is just a part of *clojure-contrib* and let's us print formatted Clojure code.
 
-Lets dive into the code. Open the file *macroology.clj*. It's a tiny file. This is all the code that it takes to augment Enlive.
+Let's dive into the code. Open the file *macroology.clj*. It's a tiny file. This is all the code that it takes to augment Enlive.
 
 <pre>
 (ns tutorial.macroology

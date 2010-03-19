@@ -17,12 +17,12 @@
                :ISBN "?"}
               {:title "Life A User's Manual"
                :author "Georges Perec"
-               :publisher (StringEscapeUtils/escapeHtml "Hachette Littératures")
+               :publisher "Hachette Litteratures"
                :date "1978"
                :edition "1st"
                :ISBN "?"}
               {:title "2666"
-               :author (StringEscapeUtils/escapeHtml "Roberto Bolaño")
+               :author "Roberto Bolano"
                :publisher "Editorial Anagrama"
                :date "2004"
                :edition "1st"
