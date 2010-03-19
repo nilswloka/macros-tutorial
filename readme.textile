@@ -120,7 +120,7 @@ tutorial/syntax=> (let [a 1 b 2] `(~a ~b))
 (1 2)
 </pre>
 
-Say hello to your first Lisp template. syntax-quote allows us to template in values with ~ (called "unquote"). Again if you have done some HTML templating this should not be so alien to you.
+Say hello to your first Lisp template. syntax-quote allows us to template in values with <code>~</code> (called "unquote"). Again if you have done some HTML templating this should not be so alien to you.
 
 But this is not a macro. We're just creating lists here. What we want is a way to transform a piece of code and replace it with the transformation. This is the whole point of <code>defmacro</code>. We'll get to this in a moment. Let's show another useful feature before we move on.
 
@@ -129,11 +129,11 @@ tutorial.syntax=> (let [f + v [1 2 3]] `(~f ~@v))
 (#<core$_PLUS ...> 1 2 3)
 </pre>
 
-Wow. ~@ lets us splice in a sequence of values! ~@ is called splicing unquote. When transform code this is a particularly useful operation.
+Wow. <code>~@</code> lets us splice in a sequence of values! <code>~@</code> is called splicing unquote. When transform code this is a particularly useful operation.
 
 h2. defmacro
 
-Okay it’s time to talk about defmacro. Be warned the following is completely contrived, it’s only for the purposes of demonstration. We’ll get to the real world macro soon. Before we look at the code let’s run the following:
+Okay it's time to talk about defmacro. Be warned the following is completely contrived, it's only for the purposes of demonstration. We'll get to the real world macro soon. Before we look at the code let's run the following:
 
 <pre class="console">
 tutorial.syntax=> (slow-add 1 2)
@@ -178,30 +178,28 @@ What's the difference here? If we look at the code we see the following:
        (int-add a b)))))
 </pre>
 
-In order to get the best arithmetic performance out of the JVM, you can provide type-hints to the compiler:
+In order to get the best arithmetic performance out of Clojure, you can provide type-hints to the compiler:
 
 <pre>
 (+ (int 4) (int 5))
 </pre>
 
-With this extra bit of information the JVM can call the correct implementation of <code>+</code> and avoid losing time in reflection. Again this is not something you should concern yourself with, and cleraly the timing numbers above show that operations on boxed numbers is passableif you're not doing serious number crunching.
+With this extra bit of information the JVM can call the correct implementation of <code>+</code> and avoid losing time in reflection. Again this is not something you should concern yourself with, and clearly the timing numbers above show that operations on boxed numbers is more than passable if you're not doing serious number crunching.
 
 Type the following into the REPL:
 
 <pre class="console">
 tutorial.syntax=> (macroexpand '(int-add 1 2))
-(macroexpand-1 '(int-add 1 2))
 (clojure.core/+ (clojure.core/int 1) (clojure.core/int 2))
 </pre> 
 
-<code>macroexpand</code> is a convenience that outpus what the code would expand to. Note that here we quote the code so that it doesn't actually get compiled. We've converted code into dat. Just as an HTML template give us transformed markup, macroexpand applies the transformations and hands us back the transformed code.
+<code>macroexpand</code> is a convenience that outputs what the code would expand to. Oftentime people complain that macros would somehow decrease the maintainability of a codebase. This is classic FUD. It's critical to be able to debug and inspect macros and the tools for doing so are a part of the language.
 
-If this data appeared as real code in our program the compiler would <i>replace</i> every occurence of <i>int-add</i> with it's macroexpansion. If you're familiar with C/C++ preprocessing you should be used to this idea. But if you conclude from this that Lisp macros really don't add much beyond that you would be very wrong. Macro's have full access the programming language. In the following section we will load the markup, analyze it with Enlive and use that information to generate an Enlive template.
+Note that here we quote the code so that the symbols in the expression don't get resolved. We've converted code into data. You've probably heard the expression that in Lisp "code is data and data is code". Well here it is. With a simple quote we convert code into data that we can operate on. <code>defmacro</code> is how we convert transformed data back into real code.
 
-Again this <code>int-add</code> example is a trivial, unrealistic, and fairly pointless example only for the purposes of illustration. Now let's solve some real world problems.
+Before your code gets compiled the reader will <i>replace</i> every occurence of <i>int-add</i> with it's macroexpansion. If you're familiar with C/C++ preprocessing you should be used to this idea. But if you conclude from this example that Lisp macros really don't add much beyond that you would be very wrong. Macros have full access to the programming language. In the following section we will load markup from an HTML, analyze it with Enlive and use that information to generate our code.
 
-TODO: defmacro a function to show issues around symbols
-TODO: show gensym
+Just to drive the point home, this <code>int-add</code> example is a trivial, unrealistic, and fairly pointless exercise only for the purposes of illustration. Now let's solve some real world problems.
 
 h2. Symbol conflicts
 
